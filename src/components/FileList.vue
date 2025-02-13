@@ -197,7 +197,7 @@ export default {
     },
 
     login () {
-      this.$http.post('https://101.36.255.206/api/login', { username: this.username, password: this.password }).
+      this.$http.post('https://127.0.0.1/api/login', { username: this.username, password: this.password }).
           then((res) => {
             console.log(res)
           })
@@ -210,7 +210,7 @@ export default {
 
     uploadFile (row) {
       const { taskUUID, fileSize, fileName, fileType, createTime, savedTime, filePath } = row
-      this.$http.post('https://101.36.255.206/api/ftp_request', {
+      this.$http.post('https://127.0.0.1/api/ftp_request', {
         deviceId: this.deviceId,
         taskUUID,
         fileSize,
