@@ -3,7 +3,7 @@
 
 ## 开发
 
-yarn electron:server
+yarn electron:serve
 
 ## 打包
 
