@@ -3,7 +3,7 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import onCompress from '@/electron/compress'
 import onUpload from '@/electron/upload'
-import { onOpenDialog, onLoadFiles , onLoadTasks, onMonitorConfig} from '@/electron/taskFileManager'
+import { onOpenDialog, onLoadFiles, onLoadTasks, onMonitorConfig, onUpdateFileStatus } from '@/electron/taskFileManager'
 import path from 'path'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -35,6 +35,7 @@ async function createWindow() {
   onLoadFiles();
   onOpenDialog(win)
   onLoadTasks()
+  onUpdateFileStatus()
 
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
