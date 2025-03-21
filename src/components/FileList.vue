@@ -222,7 +222,7 @@ export default {
     },
 
     login () {
-      this.$http.post('https://127.0.0.1/api/login', { username: this.username, password: this.password }).
+      this.$http.post(`${this.webServerUrl}/api/login`, { username: this.username, password: this.password }).
           then((res) => {
             console.log(res)
           })
@@ -239,7 +239,7 @@ export default {
       this.$set(this.uploadStatus, row.filePath, 'uploading')
       
       const { taskUUID, fileSize, fileName, fileType, createTime, savedTime, filePath } = row
-      this.$http.post('https://127.0.0.1/api/ftp_request', {
+      this.$http.post(`${this.webServerUrl}/api/ftp_request`, {
         deviceId: this.deviceId,
         taskUUID,
         fileSize,
@@ -449,7 +449,9 @@ export default {
       activeUploads: 0,
       totalUploads: 0,
       uploadStatus: {}, // 追踪每个文件的状态
-      statusRefreshTimer: null
+      statusRefreshTimer: null,
+      webServerUrl: 'https://127.0.0.1', // 默认API地址
+      ftpServerInfo: null // 存储FTP服务器信息
     }
   },
 
@@ -468,9 +470,23 @@ export default {
       this.executedTable = executed
     })
 
-    ipcRenderer.on('monitorConfig', (res, { deviceId, recordDir }) => {
+    ipcRenderer.on('monitorConfig', (res, { deviceId, recordDir, ftpServer, webServer }) => {
       this.deviceId = deviceId
       this.recordDir = recordDir
+      
+      // 更新服务器信息
+      if (webServer) {
+        // 从URL中提取基础URL，确保没有尾部斜杠
+        const baseUrl = webServer.trim().replace(/\/$/, '')
+        this.webServerUrl = baseUrl
+        console.log(`Web服务器URL已设置为: ${this.webServerUrl}`)
+      }
+      
+      if (ftpServer) {
+        this.ftpServerInfo = ftpServer
+        console.log(`FTP服务器信息已更新: ${JSON.stringify(ftpServer)}`)
+      }
+      
       console.log(recordDir)
       ipcRenderer.send('loadTasks', recordDir)
     })

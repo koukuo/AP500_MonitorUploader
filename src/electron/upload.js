@@ -1,12 +1,29 @@
-
 import {ipcMain} from "electron"
 // import Client from 'ftp'
 import {Client} from 'basic-ftp'
 import fs from 'fs'
 import path from 'path'
 
-const host = '127.0.0.1'
-const port = 5200
+// 默认值，当配置未提供时使用
+const DEFAULT_HOST = '127.0.0.1'
+const DEFAULT_PORT = 5200
+
+// 存储从配置文件读取的服务器设置
+let ftpHost = DEFAULT_HOST
+let ftpPort = DEFAULT_PORT
+
+// 更新FTP配置的函数
+function updateFtpConfig(config) {
+  if (config && config.UPLOAD) {
+    ftpHost = config.UPLOAD.UPLOAD_Add || DEFAULT_HOST
+    ftpPort = parseInt(config.UPLOAD.UPLOAD_Port || DEFAULT_PORT)
+    console.log(`已更新FTP服务器配置: ${ftpHost}:${ftpPort}`)
+  }
+}
+
+ipcMain.on('updateFtpConfig', (event, config) => {
+  updateFtpConfig(config)
+})
 
 const onUpload = (appPath) => {
   // 跟踪活跃的上传进程
@@ -32,6 +49,7 @@ const onUpload = (appPath) => {
     const {deviceId, password, compressedFilePath, fileName, filePath, taskFile} = args
     
     console.log('接收到上传请求:', { compressedFilePath, fileName, filePath, deviceId, taskFile })
+    console.log(`使用FTP服务器: ${ftpHost}:${ftpPort}`)
     
     // 如果正在取消上传，则跳过
     if (cancelingUploads) {
@@ -59,8 +77,8 @@ const onUpload = (appPath) => {
     client.ftp.verbose = true
     try {
       await client.access({
-        host,
-        port,
+        host: ftpHost,
+        port: ftpPort,
         user: deviceId,
         password,
         secure: true,

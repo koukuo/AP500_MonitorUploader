@@ -112,9 +112,17 @@ const onMonitorConfig = () => {
     console.log(config)
     const recordDir = config.General.recordRoot
     const deviceId = config.General.deviceId
+    
+    event.sender.send('updateFtpConfig', config)
+    
     event.reply('monitorConfig', {
       deviceId,
       recordDir,
+      ftpServer: config.UPLOAD ? {
+        host: config.UPLOAD.UPLOAD_Add,
+        port: config.UPLOAD.UPLOAD_Port
+      } : null,
+      webServer: config.Web ? config.Web.index : null
     })
   })
 }
