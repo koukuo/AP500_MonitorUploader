@@ -88,6 +88,7 @@ const onCompress = (appPath) => {
       if (!fs.existsSync(_7zPath)) {
         event.reply('error', '未找到7z压缩工具')
       } else if (!fs.existsSync(filePath)) {
+        console.error(`文件 ${path.basename(filePath)} 不存在`);
         event.reply('error', `文件 ${path.basename(filePath)} 不存在`)
       }
     }
